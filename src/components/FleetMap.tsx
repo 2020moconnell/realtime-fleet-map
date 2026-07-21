@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import maplibregl, { Map } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Vehicle } from "../types/fleet";
+import { statusColor, tokens } from "../theme/tokens";
 
 const INITIAL_CENTER: [number, number] = [-98.5795, 39.8283];
 const INITIAL_ZOOM = 3.5;
@@ -58,7 +59,15 @@ export function FleetMap({ vehicles }: FleetMapProps) {
         source: "vehicles",
         paint: {
           "circle-radius": 6,
-          "circle-color": "#2563eb",
+          "circle-color": [
+            "match",
+            ["get", "status"],
+            "moving",
+            statusColor.moving,
+            "idle",
+            statusColor.idle,
+            tokens.color.textMuted,
+          ],
         },
       });
     });
