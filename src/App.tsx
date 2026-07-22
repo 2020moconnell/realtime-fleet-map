@@ -19,7 +19,7 @@ function App() {
         onSelectVehicle={setSelectedVehicleId}
       />
       <div style={{ flex: 1 }}>
-        <FleetMap vehicles={vehicles} />
+        <FleetMap vehicles={vehicles} selectedVehicleId={selectedVehicleId} />
       </div>
     </div>
   );
