@@ -3,6 +3,10 @@ import { WebSocketServer } from 'ws';
 const PORT = 8080;
 const TICK_MS = 1000;
 
+// Not realistic - just scales up movement per tick so motion is visible
+// on a zoomed-out demo map instead of crawling a few meters a second.
+const SIM_SPEED_MULTIPLIER = 150;
+
 const FLEET_NAMES = [
   'Big Rig 1', 'Big Rig 2', 'Sprinter Van 3', 'Box Truck 4', 'Flatbed 5',
   'Delivery Van 6', 'Tanker 7', 'Reefer 8', 'Pickup 9', 'Box Truck 10',
@@ -45,7 +49,8 @@ function stepVehicle(vehicle) {
   // Drift heading slightly for a wandering route instead of a straight line.
   vehicle.heading = (vehicle.heading + randomBetween(-15, 15) + 360) % 360;
 
-  const distanceKm = (vehicle.speedKph * TICK_MS) / 1000 / 3600;
+  const distanceKm =
+    (vehicle.speedKph * TICK_MS * SIM_SPEED_MULTIPLIER) / 1000 / 3600;
   const headingRad = (vehicle.heading * Math.PI) / 180;
 
   // Rough planar approximation - fine at this simulation scale.
