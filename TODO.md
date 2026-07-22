@@ -26,17 +26,17 @@ What a vehicle record could carry, grouped by category. Check = modeled today in
 - [x] Clean project structure (components / hooks / types / theme / server)
 - [x] WebSockets + real-time data (mock server, reconnect logic)
 - [x] Displaying data on a map (MapLibre, GeoJSON source + circle layer)
-- [ ] Component architecture — currently just one component (`FleetMap`). Need reusable pieces: vehicle list/sidebar, detail panel, status badge, legend.
-- [ ] State management with a defensible design — currently two `useState` calls in one hook. Need real state to manage: selected vehicle, filters, alert list.
-- [ ] Token-based styling actually applied — `theme/tokens.ts` exists but is barely consumed (only status dot colors). No theming, no typography/spacing usage yet because there's no other UI chrome.
+- [x] Component architecture — `StatusBadge` (reusable dot+label), `VehicleListItem` (built from `StatusBadge`), `VehicleSidebar` (built from `VehicleListItem`). `FleetMap` is still one big component, but the sidebar side is properly decomposed now.
+- [x] State management with a defensible design — `selectedVehicleId` lives in `App.tsx` (the shared ancestor of sidebar + map) via plain `useState<string | null>`. Sidebar/list items are controlled components with no state of their own, just `selected`/`onSelect` props. Chose plain lifted state over Context/a store since there are only two consumers.
+- [x] Token-based styling actually applied — sidebar UI (`VehicleSidebar`, `VehicleListItem`, `StatusBadge`) is styled entirely from `theme/tokens.ts` (spacing, typography, color, radius). Still just the sidebar; map canvas itself has no chrome to theme.
 - [ ] Performance under real-time updates — `setData` pattern is good, but nothing stresses it yet (no memoization, no second live-updating surface like a list to show it staying smooth).
 - [ ] Map marker interactivity — hover tooltip (quick glance: name/status/speed) and click-to-open detail (fuller info, pinned until dismissed). Two distinct interactions, neither built yet.
 
 ## Proposed next slice
 
 1. Decide on the data model additions above (which fields earn their place).
-2. Add a sidebar/list of vehicles next to the map — the thing most other checklist gaps hang off of.
-3. Add selection state (click a vehicle in the list or on the map → highlight/focus both).
+2. ~~Add a sidebar/list of vehicles next to the map~~ — done: `VehicleSidebar` renders live, clicking a row updates `selectedVehicleId` in `App.tsx` and highlights that row.
+3. Selection state: list side done (click a vehicle in the list → highlights in the list). **Map side still pending** — `FleetMap` doesn't yet receive `selectedVehicleId` or react to it (no highlight, no fly-to). That's the immediate next step.
 4. Add marker interactivity on the map itself: hover tooltip + click-to-open detail popup/panel.
 5. Apply theme tokens to the new UI chrome.
 6. Add one alert-worthy condition (e.g. idle-too-long) to exercise state + component composition together.
