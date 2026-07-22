@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FleetSocketMessage, Vehicle } from "../types/fleet";
-
-export type ConnectionStatus = "connecting" | "open" | "closed";
+import type { ConnectionStatus } from "../types/connection";
 
 const RECONNECT_DELAY_MS = 2000;
 

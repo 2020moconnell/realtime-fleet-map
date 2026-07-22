@@ -1,4 +1,5 @@
 import type { VehicleStatus } from "../types/fleet";
+import type { ConnectionStatus } from "../types/connection";
 
 export const tokens = {
   color: {
@@ -37,4 +38,16 @@ export const tokens = {
 export const statusColor: Record<VehicleStatus, string> = {
   moving: tokens.color.statusMoving,
   idle: tokens.color.statusIdle,
+};
+
+export const connectionStatusText: Record<ConnectionStatus, string> = {
+  connecting: "Connecting",
+  open: "Live",
+  closed: "Disconnected",
+};
+
+export const connectionStatusColor: Record<ConnectionStatus, string> = {
+  connecting: tokens.color.connectionConnecting,
+  open: tokens.color.connectionOpen,
+  closed: tokens.color.connectionClosed,
 };
