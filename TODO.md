@@ -24,11 +24,11 @@ What a vehicle record could carry, grouped by category. Check = modeled today in
 
 - [x] Modern React + TypeScript
 - [x] Clean project structure (components / hooks / types / theme / server)
-- [x] WebSockets + real-time data (mock server, reconnect logic)
+- [x] WebSockets + real-time data (mock server, reconnect logic, connection status surfaced to the user via `ConnectionBanner`)
 - [x] Displaying data on a map (MapLibre, GeoJSON source + circle layer)
-- [x] Component architecture — `StatusBadge` (reusable dot+label), `VehicleListItem` (built from `StatusBadge`), `VehicleSidebar` (built from `VehicleListItem`). `FleetMap` is still one big component, but the sidebar side is properly decomposed now.
-- [x] State management with a defensible design — `selectedVehicleId` lives in `App.tsx` (the shared ancestor of sidebar + map) via plain `useState<string | null>`. Sidebar/list items are controlled components with no state of their own, just `selected`/`onSelect` props. Chose plain lifted state over Context/a store since there are only two consumers.
-- [x] Token-based styling actually applied — sidebar UI (`VehicleSidebar`, `VehicleListItem`, `StatusBadge`) is styled entirely from `theme/tokens.ts` (spacing, typography, color, radius). Still just the sidebar; map canvas itself has no chrome to theme.
+- [x] Component architecture — `StatusBadge` (reusable dot+label), `VehicleListItem` (built from `StatusBadge`), `VehicleSidebar` (built from `VehicleListItem`), `ConnectionBanner` (self-hiding status indicator). `FleetMap` is still one big component, but everything else is properly decomposed now.
+- [x] State management with a defensible design — `selectedVehicleId` lives in `App.tsx` (the shared ancestor of sidebar + map) via plain `useState<string | null>`. Sidebar/list items are controlled components with no state of their own, just `selected`/`onSelect` props. Chose plain lifted state over Context/a store since there are only two consumers. Connection status follows the same shape — owned by `useFleetSocket`, read by `ConnectionBanner` as a prop, no state duplication.
+- [x] Token-based styling actually applied — sidebar UI (`VehicleSidebar`, `VehicleListItem`, `StatusBadge`) and `ConnectionBanner` are styled entirely from `theme/tokens.ts` (spacing, typography, color, radius). Still no chrome on the map canvas itself.
 - [ ] Performance under real-time updates — `setData` pattern is good, but nothing stresses it yet (no memoization, no second live-updating surface like a list to show it staying smooth).
 - [ ] Map marker interactivity — hover tooltip (quick glance: name/status/speed) and click-to-open detail (fuller info, pinned until dismissed). Two distinct interactions, neither built yet.
 
@@ -38,5 +38,5 @@ What a vehicle record could carry, grouped by category. Check = modeled today in
 2. ~~Add a sidebar/list of vehicles next to the map~~ — done: `VehicleSidebar` renders live, clicking a row updates `selectedVehicleId` in `App.tsx` and highlights that row.
 3. Selection state: list side done (click a vehicle in the list → highlights in the list). **Map side still pending** — `FleetMap` doesn't yet receive `selectedVehicleId` or react to it (no highlight, no fly-to). That's the immediate next step.
 4. Add marker interactivity on the map itself: hover tooltip + click-to-open detail popup/panel.
-5. Apply theme tokens to the new UI chrome.
+5. ~~Apply theme tokens to the new UI chrome~~ — done for the sidebar and the new `ConnectionBanner` (added this slice: surfaces WebSocket `connecting`/`closed` state, hidden while `open`). Still applies to whatever chrome comes out of item 4.
 6. Add one alert-worthy condition (e.g. idle-too-long) to exercise state + component composition together.
