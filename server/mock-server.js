@@ -37,7 +37,13 @@ const fleet = Array.from({ length: FLEET_SIZE }, (_, i) =>
 function stepVehicle(vehicle) {
   // Occasionally idle a vehicle or send it back on its way.
   if (Math.random() < 0.02) {
-    vehicle.status = vehicle.status === 'moving' ? 'idle' : 'moving';
+    if (vehicle.status === 'moving') {
+      vehicle.status = 'idle';
+      vehicle.speedKph = 0;
+    } else {
+      vehicle.status = 'moving';
+      vehicle.speedKph = randomBetween(60, 100);
+    }
   }
 
   if (vehicle.status === 'idle') {
