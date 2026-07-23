@@ -28,6 +28,7 @@ function vehiclesToGeoJSON(
         id: vehicle.id,
         name: vehicle.name,
         status: vehicle.status,
+        speedKph: vehicle.speedKph,
         selected: vehicle.id === selectedVehicleId,
       },
     })),
@@ -38,6 +39,7 @@ export function FleetMap({ vehicles, selectedVehicleId }: FleetMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const vehiclesRef = useRef(vehicles);
+  const popupRef = useRef<maplibregl.Popup | null>(null);
   vehiclesRef.current = vehicles;
 
   useEffect(() => {
@@ -51,6 +53,11 @@ export function FleetMap({ vehicles, selectedVehicleId }: FleetMapProps) {
     });
 
     mapRef.current.addControl(new maplibregl.NavigationControl(), "top-right");
+
+    popupRef.current = new maplibregl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+    });
 
     mapRef.current.on("load", () => {
       mapRef.current!.addSource("vehicles", {
@@ -76,6 +83,34 @@ export function FleetMap({ vehicles, selectedVehicleId }: FleetMapProps) {
           "circle-stroke-width": ["case", ["get", "selected"], 2, 0],
           "circle-stroke-color": tokens.color.primary,
         },
+      });
+
+      mapRef.current!.on("mouseenter", "vehicles-layer", (e) => {
+        mapRef.current!.getCanvas().style.cursor = "pointer";
+
+        const feature = e.features?.[0];
+        if (!feature || feature.geometry.type !== "Point") return;
+
+        const { name, status, speedKph } = feature.properties as {
+          name: string;
+          status: string;
+          speedKph: number;
+        };
+
+        popupRef
+          .current!.setLngLat(feature.geometry.coordinates as [number, number])
+          .setHTML(
+            `<div style="font-family: ${tokens.typography.fontFamily}; font-size: ${tokens.typography.fontSizeSm}; color: ${tokens.color.background};">
+  <strong>${name}</strong><br />
+  ${status} · ${Math.round(speedKph)} km/h
+</div>`,
+          )
+          .addTo(mapRef.current!);
+      });
+
+      mapRef.current!.on("mouseleave", "vehicles-layer", () => {
+        mapRef.current!.getCanvas().style.cursor = "";
+        popupRef.current!.remove();
       });
     });
 
