@@ -7,10 +7,7 @@ const TICK_MS = 1000;
 // on a zoomed-out demo map instead of crawling a few meters a second.
 const SIM_SPEED_MULTIPLIER = 150;
 
-const FLEET_NAMES = [
-  'Big Rig 1', 'Big Rig 2', 'Sprinter Van 3', 'Box Truck 4', 'Flatbed 5',
-  'Delivery Van 6', 'Tanker 7', 'Reefer 8', 'Pickup 9', 'Box Truck 10',
-];
+const FLEET_SIZE = 250;
 
 // Spread starting points across the continental US so the whole-country
 // map view has something to look at immediately.
@@ -33,7 +30,9 @@ function createVehicle(id, name) {
   };
 }
 
-const fleet = FLEET_NAMES.map((name, i) => createVehicle(`veh-${i + 1}`, name));
+const fleet = Array.from({ length: FLEET_SIZE }, (_, i) =>
+  createVehicle(`veh-${i + 1}`, `Vehicle ${i + 1}`),
+);
 
 function stepVehicle(vehicle) {
   // Occasionally idle a vehicle or send it back on its way.

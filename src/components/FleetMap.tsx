@@ -10,6 +10,7 @@ const INITIAL_ZOOM = 3.5;
 interface FleetMapProps {
   vehicles: Vehicle[];
   selectedVehicleId: string | null;
+  onSelectVehicle: (id: string) => void;
 }
 
 function vehiclesToGeoJSON(
@@ -35,7 +36,11 @@ function vehiclesToGeoJSON(
   };
 }
 
-export function FleetMap({ vehicles, selectedVehicleId }: FleetMapProps) {
+export function FleetMap({
+  vehicles,
+  selectedVehicleId,
+  onSelectVehicle,
+}: FleetMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const vehiclesRef = useRef(vehicles);
@@ -101,9 +106,9 @@ export function FleetMap({ vehicles, selectedVehicleId }: FleetMapProps) {
           .current!.setLngLat(feature.geometry.coordinates as [number, number])
           .setHTML(
             `<div style="font-family: ${tokens.typography.fontFamily}; font-size: ${tokens.typography.fontSizeSm}; color: ${tokens.color.background};">
-  <strong>${name}</strong><br />
-  ${status} · ${Math.round(speedKph)} km/h
-</div>`,
+            <strong>${name}</strong><br />
+            ${status} · ${Math.round(speedKph)} km/h
+            </div>`,
           )
           .addTo(mapRef.current!);
       });
@@ -111,6 +116,14 @@ export function FleetMap({ vehicles, selectedVehicleId }: FleetMapProps) {
       mapRef.current!.on("mouseleave", "vehicles-layer", () => {
         mapRef.current!.getCanvas().style.cursor = "";
         popupRef.current!.remove();
+      });
+
+      mapRef.current!.on("click", "vehicles-layer", (e) => {
+        const feature = e.features?.[0];
+        if (!feature) return;
+
+        const { id } = feature.properties as { id: string };
+        onSelectVehicle(id);
       });
     });
 
